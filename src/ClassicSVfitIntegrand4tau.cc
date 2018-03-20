@@ -156,20 +156,23 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
   fittedTauLepton4_.updateVisMomentum(visPtShift4);
 
   // compute visible energy fractions for both taus of first tau pair
-  double x1_dash = 1.;
+  double x1_dash = 1.;  
   if ( !leg1isPrompt_ ) {
     int idx_x1 = legIntegrationParams_[0].idx_X_;
     assert(idx_x1 != -1);
     x1_dash = x_[idx_x1];
+    
   }
   double x1 = x1_dash/visPtShift1;
   if ( !(x1 >= 1.e-5 && x1 <= 1.) ) return 0.;
 
   double x2_dash = 1.;
+  bool x2isConstrained = true;
   if ( !leg2isPrompt_ ) {
     int idx_x2 = legIntegrationParams_[1].idx_X_;
     if ( idx_x2 != -1 ) {
       x2_dash = x_[idx_x2];
+      x2isConstrained = false;
     } else {
       x2_dash = (ditau1_mVis2_measured_/diTau1MassConstraint2_)/x1_dash;
     }
@@ -188,10 +191,12 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
   if ( !(x3 >= 1.e-5 && x3 <= 1.) ) return 0.;
 
   double x4_dash = 1.;
+  bool x4isConstrained = true;
   if ( !leg4isPrompt_ ) {
     int idx_x4 = legIntegrationParams_[3].idx_X_;
     if ( idx_x4 != -1 ) {
       x4_dash = x_[idx_x4];
+      x4isConstrained = false;
     } else {
       if ( diTau2MassConstraint_ > 0. ) {
 	x4_dash = (ditau2_mVis2_measured_/diTau2MassConstraint2_)/x3_dash;
@@ -323,18 +328,28 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
 
   double jacobiFactor = 1.;
   jacobiFactor *= 1./(visPtShift1*visPtShift2); // product of derrivatives dx1/dx1' and dx2/dx2' for parametrization of x1, x2 by x1', x2'  
-  if ( diTau1MassConstraint_ > 0. ) {
-    jacobiFactor *= (2.*x2/diTau1MassConstraint_);
+  if ( x2isConstrained ) {
+    if ( diTau1MassConstraint_ > 0. ) {
+      jacobiFactor *= (2.*x2/diTau1MassConstraint_);
+    } else {
+      double diTau1Mass = (fittedTauLepton1_.tauP4() + fittedTauLepton2_.tauP4()).mass();
+      jacobiFactor *= (2.*x4/diTau1Mass);
+    }
   }
   jacobiFactor *= 1./(visPtShift3*visPtShift4); // product of derrivatives dx3/dx3' and dx4/dx4' for parametrization of x3, x4 by x3', x4'  
-  if ( diTau2MassConstraint_ > 0. ) {
-    jacobiFactor *= (2.*x4/diTau2MassConstraint_);
+  if ( x4isConstrained ) {
+    if ( diTau2MassConstraint_ > 0. ) {
+      jacobiFactor *= (2.*x4/diTau2MassConstraint_);
+    } else {
+      double diTau2Mass = (fittedTauLepton3_.tauP4() + fittedTauLepton4_.tauP4()).mass();
+      jacobiFactor *= (2.*x4/diTau2Mass);
+    }
   }
 
   //static int numCalls = 0;
   //++numCalls;
   //std::cout << "call #" << numCalls << ":" << std::endl;
-  //if ( numCalls > 100 ) assert(0);
+  //if ( numCalls > 1000 ) assert(0);
 
   double prob = prob_PS_and_tauDecay*prob_TF*prob_logM*jacobiFactor;
   if ( verbosity_ >= 2 ) {
@@ -358,11 +373,12 @@ double ClassicSVfitIntegrand4tau::Eval(const double* x, unsigned int iComponent)
     phaseSpaceComponentCache_ = EvalPS(x);
   }
   if ( phaseSpaceComponentCache_ < 1.e-300 ) return 0.;
-  double prob = phaseSpaceComponentCache_*EvalMET_TF(iComponent);
+  double prob_metTF = EvalMET_TF(iComponent);
+  double prob = phaseSpaceComponentCache_*prob_metTF;
   if ( verbosity_ >= 2 ) {
-    std::cout<<" metTF: " << EvalMET_TF(iComponent)
-	     << " phaseSpaceComponentCache_: " << phaseSpaceComponentCache_
-	     << " --> returning " << prob << std::endl;
+    std::cout << " metTF: " << prob_metTF << ","
+	      << " phaseSpaceComponentCache: " << phaseSpaceComponentCache_
+	      << " --> returning " << prob << std::endl;
   }
   if ( histogramAdapter_ && prob > 1.e-300 ){
     histogramAdapter_->setTau123And4P4(fittedTauLepton1_.tauP4(), fittedTauLepton2_.tauP4(), fittedTauLepton3_.tauP4(), fittedTauLepton4_.tauP4());

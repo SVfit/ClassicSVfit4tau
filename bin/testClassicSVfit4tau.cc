@@ -20,24 +20,24 @@ int main(int argc, char* argv[])
   */
 
   // define MET
-  double measuredMETx = 13.1779;
-  double measuredMETy = 54.9923;
+  double measuredMETx = -0.727501;
+  double measuredMETy =  2.22865;
 
   // define MET covariance
   TMatrixD covMET(2, 2);
-  covMET[0][0] = 829.442;
-  covMET[1][0] = 161.376;
-  covMET[0][1] = 161.376;
-  covMET[1][1] = 574.186;
+  covMET[0][0] = 415.234;
+  covMET[1][0] =  66.9038;
+  covMET[0][1] =  66.9038;
+  covMET[1][1] = 329.008;
 
   // define lepton four vectors
   std::vector<MeasuredTauLepton> measuredTauLeptons;
   // decay products of first Higgs bosons
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToMuDecay,   21.4323, -0.65693,   0.800028, 0.10566));     // tau -> muon decay (Pt, eta, phi, mass)
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay,  37.126,   0.174097,  2.16421,  0.762756, 1)); // tau -> 1prong1pi0 hadronic decay (Pt, eta, phi, mass)
+  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToMuDecay,  14.9606,  0.465224,  2.54672,   0.10566));    // tau -> muon decay (Pt, eta, phi, mass)
+  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay, 67.5723,  1.00655,  -2.49902,   1.21648, 2)); // tau -> 1prong2pi0 hadronic decay (Pt, eta, phi, mass)
   // decay products of second Higgs bosons
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToMuDecay,   30.3555, -0.611901, -1.10589,  0.10566));     // tau -> muon decay (Pt, eta, phi, mass)
-  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay, 196.753,  -0.276988, -2.68803,  0.85196,  1)); // tau -> 1prong1pi0 hadronic decay (Pt, eta, phi, mass)
+  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToMuDecay,  21.4138,  1.43247,   0.0136936, 0.10566));    // tau -> muon decay (Pt, eta, phi, mass)
+  measuredTauLeptons.push_back(MeasuredTauLepton(MeasuredTauLepton::kTauToHadDecay, 47.3219, -0.0773025, 0.310924,  0.13957, 0)); // tau -> 1prong1pi0 hadronic decay (Pt, eta, phi, mass)
   /*
      tauDecayModes:  0 one-prong without neutral pions
                      1 one-prong with neutral pions
@@ -51,59 +51,71 @@ int main(int argc, char* argv[])
   //svFitAlgo.setHadTauTF(hadTauTF);
   //svFitAlgo.enableHadTauTF();
 #endif
-
-  // run with mass constraint for each tau pair to match measured mass (125.06 GeV) of SM-like Higgs boson 
+  // run with mass constraint for each tau pair to match measured mass (125.06 GeV) of SM-like Higgs boson   
   double massContraint = 125.06;
   //svFitAlgo.addLogM_fixed(false);
-  svFitAlgo.addLogM_fixed(true, 12.);
+  svFitAlgo.addLogM_fixed(true, 6.);
   //svFitAlgo.addLogM_dynamic(true, "(m/1000.)*15.");
   //svFitAlgo.setMaxObjFunctionCalls(100000); // CV: default is 100000 evaluations of integrand per event
-  svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
-  svFitAlgo.setDiTau1MassConstraint(massContraint);
-  svFitAlgo.setDiTau2MassConstraint(massContraint);
 
+  std::cout << "\n\nTesting integration with ditau mass constraint set to " << massContraint << std::endl;
+  svFitAlgo.setLikelihoodFileName("testClassicSVfit_withMassContraint.root");
+  svFitAlgo.setDiTau1MassConstraint(massContraint);
+  svFitAlgo.setDiTau2MassConstraint(massContraint);  
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
   bool isValidSolution_1stRun = svFitAlgo.isValidSolution();
-  double mass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMass();
-  double massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMassErr();
-  double transverseMass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
-  double transverseMassErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
+  double dihiggs_mass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMass();
+  double dihiggs_massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMassErr();
+  double dihiggs_transverseMass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
+  double dihiggs_transverseMassErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
+  double ditau1_mass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau1()->getMass();
+  double ditau1_massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau1()->getMassErr();
+  double ditau2_mass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMass();
+  double ditau2_massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMassErr();
 
   if ( isValidSolution_1stRun ) {
-    std::cout << "found valid solution: mass = " << mass_1stRun << " +/- " << massErr_1stRun << " (expected value = 395.003 +/- 12.8448),"
-              << " transverse mass = " << transverseMass_1stRun << " +/- " << transverseMassErr_1stRun << " (expected value = 384.283 +/- 11.4043)" << std::endl;
+    std::cout << "found valid solution: mass = " << dihiggs_mass_1stRun << " +/- " << dihiggs_massErr_1stRun << " (expected value = 405.091 +/- 9.61344),"
+              << " transverse mass = " << dihiggs_transverseMass_1stRun << " +/- " << dihiggs_transverseMassErr_1stRun << " (expected value = 361.319 +/- 10.3389)" << std::endl;
+    std::cout << "(ditau1: mass = " << ditau1_mass_1stRun << " +/- " << ditau1_massErr_1stRun << ","
+	      << " ditau2: mass = " << ditau2_mass_1stRun << " +/- " << ditau2_massErr_1stRun << ")" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  if (std::abs((mass_1stRun - 395.003) / 395.003) > 0.001) return 1;
-  if (std::abs((massErr_1stRun - 12.8448) / 12.8448) > 0.001) return 1;
-  if (std::abs((transverseMass_1stRun - 384.283) / 384.283) > 0.001) return 1;
-  if (std::abs((transverseMassErr_1stRun - 11.4043) / 11.4043) > 0.001) return 1;
- 
+  if (std::abs((dihiggs_mass_1stRun - 405.091) / 405.091) > 0.001) return 1;
+  if (std::abs((dihiggs_massErr_1stRun - 9.61344) / 9.61344) > 0.001) return 1;
+  if (std::abs((dihiggs_transverseMass_1stRun - 361.319) / 361.319) > 0.001) return 1;
+  if (std::abs((dihiggs_transverseMassErr_1stRun - 10.3389) / 10.3389) > 0.001) return 1;
+  
   // re-run without mass constraint for each tau pair;
   // this mode will set the mass of the second tau pair to match the mass of the first tau pair,
   // while the mass of the first tau pair is allowed to freely vary within the fit
-  std::cout << "\n\nTesting integration with di tau mass constraint set to " << massContraint << std::endl;
-  svFitAlgo.setLikelihoodFileName("testClassicSVfit_withMassContraint.root");
+  std::cout << "\n\nTesting integration without fixed ditau mass constraint" << std::endl;
+  svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
   svFitAlgo.setDiTau1MassConstraint(-1.);
   svFitAlgo.setDiTau2MassConstraint(-1.);
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
   bool isValidSolution_2ndRun = svFitAlgo.isValidSolution();
-  double mass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMass();
-  double massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMassErr();
-  double transverseMass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
-  double transverseMassErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
+  double dihiggs_mass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMass();
+  double dihiggs_massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMassErr();
+  double dihiggs_transverseMass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMass();
+  double dihiggs_transverseMassErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getTransverseMassErr();
+  double ditau1_mass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau1()->getMass();
+  double ditau1_massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau1()->getMassErr();
+  double ditau2_mass_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMass();
+  double ditau2_massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMassErr();
 
   if ( isValidSolution_2ndRun ) {
-    std::cout << "found valid solution: mass = " << mass_2ndRun << " +/- " << massErr_2ndRun << " (expected value = 436.01 +/- 90.3875),"
-              << " transverse mass = " << transverseMass_2ndRun << " +/- " << transverseMassErr_2ndRun << " (expected value = 424.177 +/- 85.6547)" << std::endl;
+    std::cout << "found valid solution: mass = " << dihiggs_mass_2ndRun << " +/- " << dihiggs_massErr_2ndRun << " (expected value = 272.879 +/- 90.9535),"
+              << " transverse mass = " << dihiggs_transverseMass_2ndRun << " +/- " << dihiggs_transverseMassErr_2ndRun << " (expected value = 243.393 +/- 81.2046)" << std::endl;
+    std::cout << "(ditau1: mass = " << ditau1_mass_2ndRun << " +/- " << ditau1_massErr_2ndRun << ","
+	      << " ditau2: mass = " << ditau2_mass_2ndRun << " +/- " << ditau2_massErr_2ndRun << ")" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  if (std::abs((mass_2ndRun - 436.01) / 436.01) > 0.001) return 1;
-  if (std::abs((massErr_2ndRun - 90.3875) / 90.3875) > 0.001) return 1;
-  if (std::abs((transverseMass_2ndRun - 424.177) / 424.177) > 0.001) return 1;
-  if (std::abs((transverseMassErr_2ndRun - 85.6547) / 85.6547) > 0.001) return 1;
+  if (std::abs((dihiggs_mass_2ndRun - 272.879) / 272.879) > 0.001) return 1;
+  if (std::abs((dihiggs_massErr_2ndRun - 90.9535) / 90.9535) > 0.001) return 1;
+  if (std::abs((dihiggs_transverseMass_2ndRun - 243.393) / 243.393) > 0.001) return 1;
+  if (std::abs((dihiggs_transverseMassErr_2ndRun - 81.2046) / 81.2046) > 0.001) return 1;
 
   return 0;
 }
