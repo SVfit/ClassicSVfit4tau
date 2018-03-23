@@ -53,8 +53,13 @@ int main(int argc, char* argv[])
 #endif
   // run with mass constraint for each tau pair to match measured mass (125.06 GeV) of SM-like Higgs boson   
   double massContraint = 125.06;
-  //svFitAlgo.addLogM_fixed(false);
-  svFitAlgo.addLogM_fixed(true, 6.);
+  //double kappa = 6.; // kappa parameter for log(M) term, cf. Eq. (41) in Nucl.Instrum.Meth. A862 (2017) 54-84
+  double kappa = 0.; 
+  if ( kappa > 0. ) {
+    svFitAlgo.addLogM_fixed(true, kappa);
+  } else {
+    svFitAlgo.addLogM_fixed(false);
+  }
   //svFitAlgo.addLogM_dynamic(true, "(m/1000.)*15.");
   //svFitAlgo.setMaxObjFunctionCalls(100000); // CV: default is 100000 evaluations of integrand per event
 
@@ -74,17 +79,19 @@ int main(int argc, char* argv[])
   double ditau2_massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMassErr();
 
   if ( isValidSolution_1stRun ) {
-    std::cout << "found valid solution: mass = " << dihiggs_mass_1stRun << " +/- " << dihiggs_massErr_1stRun << " (expected value = 405.091 +/- 9.61344),"
-              << " transverse mass = " << dihiggs_transverseMass_1stRun << " +/- " << dihiggs_transverseMassErr_1stRun << " (expected value = 361.319 +/- 10.3389)" << std::endl;
+    std::cout << "found valid solution: mass = " << dihiggs_mass_1stRun << " +/- " << dihiggs_massErr_1stRun << " (expected value = 405.091 +/- 10.6929),"
+              << " transverse mass = " << dihiggs_transverseMass_1stRun << " +/- " << dihiggs_transverseMassErr_1stRun << " (expected value = 361.319 +/- 12.8636)" << std::endl;
     std::cout << "(ditau1: mass = " << ditau1_mass_1stRun << " +/- " << ditau1_massErr_1stRun << ","
 	      << " ditau2: mass = " << ditau2_mass_1stRun << " +/- " << ditau2_massErr_1stRun << ")" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  if (std::abs((dihiggs_mass_1stRun - 405.091) / 405.091) > 0.001) return 1;
-  if (std::abs((dihiggs_massErr_1stRun - 9.61344) / 9.61344) > 0.001) return 1;
-  if (std::abs((dihiggs_transverseMass_1stRun - 361.319) / 361.319) > 0.001) return 1;
-  if (std::abs((dihiggs_transverseMassErr_1stRun - 10.3389) / 10.3389) > 0.001) return 1;
+  if ( kappa == 0. ) {
+    if (std::abs((dihiggs_mass_1stRun - 405.091) / 415.218) > 0.001) return 1;
+    if (std::abs((dihiggs_massErr_1stRun - 10.6929) / 10.6929) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMass_1stRun - 361.319) / 361.319) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMassErr_1stRun - 12.8636) / 12.8636) > 0.001) return 1;
+  }
   
   // re-run without mass constraint for each tau pair;
   // this mode will set the mass of the second tau pair to match the mass of the first tau pair,
@@ -105,17 +112,19 @@ int main(int argc, char* argv[])
   double ditau2_massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMassErr();
 
   if ( isValidSolution_2ndRun ) {
-    std::cout << "found valid solution: mass = " << dihiggs_mass_2ndRun << " +/- " << dihiggs_massErr_2ndRun << " (expected value = 272.879 +/- 90.9535),"
-              << " transverse mass = " << dihiggs_transverseMass_2ndRun << " +/- " << dihiggs_transverseMassErr_2ndRun << " (expected value = 243.393 +/- 81.2046)" << std::endl;
+    std::cout << "found valid solution: mass = " << dihiggs_mass_2ndRun << " +/- " << dihiggs_massErr_2ndRun << " (expected value = 415.218 +/- 80.5434),"
+              << " transverse mass = " << dihiggs_transverseMass_2ndRun << " +/- " << dihiggs_transverseMassErr_2ndRun << " (expected value = 361.319 +/- 70.572)" << std::endl;
     std::cout << "(ditau1: mass = " << ditau1_mass_2ndRun << " +/- " << ditau1_massErr_2ndRun << ","
 	      << " ditau2: mass = " << ditau2_mass_2ndRun << " +/- " << ditau2_massErr_2ndRun << ")" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
-  if (std::abs((dihiggs_mass_2ndRun - 272.879) / 272.879) > 0.001) return 1;
-  if (std::abs((dihiggs_massErr_2ndRun - 90.9535) / 90.9535) > 0.001) return 1;
-  if (std::abs((dihiggs_transverseMass_2ndRun - 243.393) / 243.393) > 0.001) return 1;
-  if (std::abs((dihiggs_transverseMassErr_2ndRun - 81.2046) / 81.2046) > 0.001) return 1;
+  if ( kappa == 0. ) {
+    if (std::abs((dihiggs_mass_2ndRun - 415.218) / 415.218) > 0.001) return 1;
+    if (std::abs((dihiggs_massErr_2ndRun - 80.5434) / 80.5434) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMass_2ndRun - 361.319) / 361.319) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMassErr_2ndRun - 70.572) / 70.572) > 0.001) return 1;
+  }
 
   return 0;
 }
