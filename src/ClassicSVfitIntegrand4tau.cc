@@ -23,7 +23,7 @@ ClassicSVfitIntegrand4tau::ClassicSVfitIntegrand4tau(int verbosity)
   , diTau2MassConstraint_(-1.)
   , histogramAdapter_(nullptr)
 {
-  if ( verbosity_ ) {
+  if ( verbosity_ >= 2 ) {
     std::cout << "<ClassicSVfitIntegrand4tau::ClassicSVfitIntegrand4tau>:" << std::endl;
   }
 
@@ -51,7 +51,7 @@ ClassicSVfitIntegrand4tau::ClassicSVfitIntegrand4tau(int verbosity)
 
 ClassicSVfitIntegrand4tau::~ClassicSVfitIntegrand4tau()
 {
-  if ( verbosity_ ) {
+  if ( verbosity_ >= 2 ) {
     std::cout << "<ClassicSVfitIntegrand4tau::~ClassicSVfitIntegrand4tau>:" << std::endl;
   }
 }
@@ -104,12 +104,12 @@ void ClassicSVfitIntegrand4tau::setLeptonInputs(const std::vector<MeasuredTauLep
   leg4isPrompt_ = measuredTauLepton4_.isPrompt();
 
   ditau1_mVis_measured_ = (measuredTauLepton1_.p4() + measuredTauLepton2_.p4()).mass();
-  if ( verbosity_ >= 2 ) {
+  if ( verbosity_ >= 1 ) {
     std::cout << "mVis(1st ditau) = " << ditau1_mVis_measured_ << std::endl;
   }
   ditau1_mVis2_measured_ = square(ditau1_mVis_measured_);
   ditau2_mVis_measured_ = (measuredTauLepton3_.p4() + measuredTauLepton4_.p4()).mass();
-  if ( verbosity_ >= 2 ) {
+  if ( verbosity_ >= 1 ) {
     std::cout << "mVis(2nd ditau) = " << ditau2_mVis_measured_ << std::endl;
   }
   ditau2_mVis2_measured_ = square(ditau2_mVis_measured_);

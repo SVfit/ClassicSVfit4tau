@@ -142,7 +142,17 @@ void ClassicSVfit4tau::integrate(const std::vector<MeasuredTauLepton>& measuredT
   double theIntegral, theIntegralErr;
   intAlgo_->integrate(&g_C, xl_, xh_, numDimensions_, theIntegral, theIntegralErr);
   isValidSolution_ = histogramAdapter_->isValidSolution();
-  
+  if ( verbosity_ >= 1 ) {
+    if ( isValidSolution_ ) {
+      std::cout << "found valid solution: mass = " << histogramAdapter_->getMass() << " +/- " << histogramAdapter_->getMassErr() << std::endl;
+      std::cout << "(ditau1: mass = " << histogramAdapter_->ditau1()->getMass() << " +/- " << histogramAdapter_->ditau1()->getMassErr() << ","
+		<< " ditau2: mass = " << histogramAdapter_->ditau2()->getMass() << " +/- " << histogramAdapter_->ditau2()->getMassErr() << ","
+		<< " probMax = " << getProbMax() << ")" << std::endl;
+    } else {
+      std::cout << "sorry, failed to find valid solution !!" << std::endl;
+    }
+  }
+
   if ( likelihoodFileName_ != "" ) {
     histogramAdapter_->writeHistograms(likelihoodFileName_);
   }
