@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   //svFitAlgo.setMaxObjFunctionCalls(100000); // CV: default is 100000 evaluations of integrand per event
 
   std::cout << "\n\nTesting integration with ditau mass constraint set to " << massContraint << std::endl;
-  svFitAlgo.setLikelihoodFileName("testClassicSVfit_withMassContraint.root");
+  svFitAlgo.setLikelihoodFileName("testClassicSVfit4tau_withMassContraint.root");
   svFitAlgo.setDiTau1MassConstraint(massContraint);
   svFitAlgo.setDiTau2MassConstraint(massContraint);  
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
   // this mode will set the mass of the second tau pair to match the mass of the first tau pair,
   // while the mass of the first tau pair is allowed to freely vary within the fit
   std::cout << "\n\nTesting integration without fixed ditau mass constraint" << std::endl;
-  svFitAlgo.setLikelihoodFileName("testClassicSVfit.root");
+  svFitAlgo.setLikelihoodFileName("testClassicSVfit4tau.root");
   svFitAlgo.setDiTau1MassConstraint(-1.);
   svFitAlgo.setDiTau2MassConstraint(-1.);
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
@@ -112,18 +112,18 @@ int main(int argc, char* argv[])
   double ditau2_massErr_2ndRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->ditau2()->getMassErr();
 
   if ( isValidSolution_2ndRun ) {
-    std::cout << "found valid solution: mass = " << dihiggs_mass_2ndRun << " +/- " << dihiggs_massErr_2ndRun << " (expected value = 415.218 +/- 80.5434),"
-              << " transverse mass = " << dihiggs_transverseMass_2ndRun << " +/- " << dihiggs_transverseMassErr_2ndRun << " (expected value = 361.319 +/- 70.572)" << std::endl;
+    std::cout << "found valid solution: mass = " << dihiggs_mass_2ndRun << " +/- " << dihiggs_massErr_2ndRun << " (expected value = 366.992 +/- 88.1767),"
+              << " transverse mass = " << dihiggs_transverseMass_2ndRun << " +/- " << dihiggs_transverseMassErr_2ndRun << " (expected value = 343.908 +/- 71.5488)" << std::endl;
     std::cout << "(ditau1: mass = " << ditau1_mass_2ndRun << " +/- " << ditau1_massErr_2ndRun << ","
 	      << " ditau2: mass = " << ditau2_mass_2ndRun << " +/- " << ditau2_massErr_2ndRun << ")" << std::endl;
   } else {
     std::cout << "sorry, failed to find valid solution !!" << std::endl;
   }
   if ( kappa == 0. ) {
-    if (std::abs((dihiggs_mass_2ndRun - 415.218) / 415.218) > 0.001) return 1;
-    if (std::abs((dihiggs_massErr_2ndRun - 80.5434) / 80.5434) > 0.001) return 1;
-    if (std::abs((dihiggs_transverseMass_2ndRun - 361.319) / 361.319) > 0.001) return 1;
-    if (std::abs((dihiggs_transverseMassErr_2ndRun - 70.572) / 70.572) > 0.001) return 1;
+    if (std::abs((dihiggs_mass_2ndRun - 366.992) / 366.992) > 0.001) return 1;
+    if (std::abs((dihiggs_massErr_2ndRun - 88.1767) / 88.1767) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMass_2ndRun - 343.908) / 343.908) > 0.001) return 1;
+    if (std::abs((dihiggs_transverseMassErr_2ndRun - 71.5488) / 71.5488) > 0.001) return 1;
   }
 
   return 0;

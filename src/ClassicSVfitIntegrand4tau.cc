@@ -330,19 +330,19 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
   jacobiFactor *= 1./(visPtShift1*visPtShift2); // product of derrivatives dx1/dx1' and dx2/dx2' for parametrization of x1, x2 by x1', x2'  
   if ( x2isConstrained ) {
     if ( diTau1MassConstraint_ > 0. ) {
-      jacobiFactor *= (2.*x2/diTau1MassConstraint_);
+      jacobiFactor *= (x2/square(diTau1MassConstraint_));
     } else {
       double diTau1Mass = (fittedTauLepton1_.tauP4() + fittedTauLepton2_.tauP4()).mass();
-      jacobiFactor *= (2.*x2/diTau1Mass);
+      jacobiFactor *= (x2/square(diTau1Mass));
     }
   }
   jacobiFactor *= 1./(visPtShift3*visPtShift4); // product of derrivatives dx3/dx3' and dx4/dx4' for parametrization of x3, x4 by x3', x4'  
   if ( x4isConstrained ) {
     if ( diTau2MassConstraint_ > 0. ) {
-      jacobiFactor *= (2.*x4/diTau2MassConstraint_);
+      jacobiFactor *= (x4/square(diTau2MassConstraint_));
     } else {
       double diTau2Mass = (fittedTauLepton3_.tauP4() + fittedTauLepton4_.tauP4()).mass();
-      jacobiFactor *= (2.*x4/diTau2Mass);
+      jacobiFactor *= (x4/square(diTau2Mass));
     }
   }
 
