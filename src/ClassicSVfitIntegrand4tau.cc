@@ -68,6 +68,12 @@ void ClassicSVfitIntegrand4tau::setDiTau2MassConstraint(double diTauMass)
   diTau2MassConstraint2_ = square(diTau2MassConstraint_);
 }
 
+void ClassicSVfitIntegrand4tau::setDiHiggsMassConstraint(double diHiggsMass)
+{
+  diHiggsMassConstraint_ = diHiggsMass;
+  diHiggsMassConstraint2_ = square(diHiggsMassConstraint_);
+}
+
 void ClassicSVfitIntegrand4tau::setHistogramAdapter(HistogramAdapterDiHiggs* histogramAdapter)
 {
   histogramAdapter_ = histogramAdapter;
@@ -116,6 +122,22 @@ void ClassicSVfitIntegrand4tau::setLeptonInputs(const std::vector<MeasuredTauLep
   if ( verbosity_ >= 2 ) {
     std::cout << "mVis(4tau) = " << (measuredTauLepton1_.p4() + measuredTauLepton2_.p4() + measuredTauLepton3_.p4() + measuredTauLepton4_.p4()).mass() << std::endl;
   }
+
+  //-----------------------------------------------------------------------------
+  // CV: only used in conjunction with VAMP integration
+  mVis12_ = ditau1_mVis_measured_;
+  //std::cout << "mVis12 = " << mVis12_ << std::endl;
+  mVis13_ = (measuredTauLepton1_.p4() + measuredTauLepton3_.p4()).mass();
+  //std::cout << "mVis13 = " << mVis13_ << std::endl;
+  mVis14_ = (measuredTauLepton1_.p4() + measuredTauLepton4_.p4()).mass();
+  //std::cout << "mVis14 = " << mVis14_ << std::endl;
+  mVis23_ = (measuredTauLepton2_.p4() + measuredTauLepton3_.p4()).mass();
+  //std::cout << "mVis23 = " << mVis23_ << std::endl;
+  mVis24_ = (measuredTauLepton2_.p4() + measuredTauLepton4_.p4()).mass();
+  //std::cout << "mVis24 = " << mVis24_ << std::endl;
+  mVis34_ = ditau2_mVis_measured_;
+  //std::cout << "mVis34 = " << mVis34_ << std::endl;
+  //-----------------------------------------------------------------------------
 }
 
 double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
@@ -157,11 +179,12 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
 
   // compute visible energy fractions for both taus of first tau pair
   double x1_dash = 1.;  
+  bool x1isConstrained = true;
   if ( !leg1isPrompt_ ) {
     int idx_x1 = legIntegrationParams_[0].idx_X_;
     assert(idx_x1 != -1);
     x1_dash = x_[idx_x1];
-    
+    x1isConstrained = false;
   }
   double x1 = x1_dash/visPtShift1;
   if ( !(x1 >= 1.e-5 && x1 <= 1.) ) return 0.;
@@ -181,34 +204,97 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
   if ( !(x2 >= 1.e-5 && x2 <= 1.) ) return 0.;
 
   // compute visible energy fractions for both taus of second tau pair
-  double x3_dash = 1.;
+  std::vector<double> x3_dash_solutions;
+  bool x3isConstrained = true;
+  double term_b = 0.;
+  double term_c = 0.;
+  double term_d = 0.;
+  double term_e = 0.;
   if ( !leg3isPrompt_ ) {
     int idx_x3 = legIntegrationParams_[2].idx_X_;
-    assert(idx_x3 != -1);
-    x3_dash = x_[idx_x3];
-  }
-  double x3 = x3_dash/visPtShift3;
-  if ( !(x3 >= 1.e-5 && x3 <= 1.) ) return 0.;
-
-  double x4_dash = 1.;
-  bool x4isConstrained = true;
-  if ( !leg4isPrompt_ ) {
-    int idx_x4 = legIntegrationParams_[3].idx_X_;
-    if ( idx_x4 != -1 ) {
-      x4_dash = x_[idx_x4];
-      x4isConstrained = false;
+    if ( idx_x3 != -1 ) {
+      double x3_dash = x_[idx_x3];
+      x3_dash_solutions.push_back(x3_dash);
+      x3isConstrained = false;
     } else {
-      if ( diTau2MassConstraint_ > 0. ) {
-	x4_dash = (ditau2_mVis2_measured_/diTau2MassConstraint2_)/x3_dash;
-      } else {
-	double ditau1_mTauTau2_approx = ditau1_mVis2_measured_/(x1_dash*x2_dash);
-	x4_dash = (ditau2_mVis2_measured_/ditau1_mTauTau2_approx)/x3_dash;
-      }
+      //-------------------------------------------------------------------------
+      // CV: only used in conjunction with VAMP integration
+      //std::cout << "diHiggsMassConstraint2 = " << diHiggsMassConstraint2_ << std::endl;
+      assert(diTau1MassConstraint2_ > 0. && diTau2MassConstraint2_ > 0.);
+      double term_a1 = diTau1MassConstraint2_;
+      double term_a2 = diTau2MassConstraint2_;
+      term_b = square(mVis13_);
+      //std::cout << "term_b = " << term_b << std::endl;
+      assert(mVis34_ > 0.);
+      term_c = square(mVis14_/mVis34_)*diTau2MassConstraint2_;
+      //std::cout << "term_c = " << term_c << std::endl;
+      assert(mVis12_ > 0.);
+      term_d = square(mVis23_/mVis12_)*diTau1MassConstraint2_;
+      //std::cout << "term_d = " << term_d << std::endl;
+      term_e = square(mVis24_/(mVis12_*mVis34_))*diTau1MassConstraint2_*diTau2MassConstraint2_;
+      //std::cout << "term_e = " << term_e << std::endl;
+      double term1 = (diHiggsMassConstraint2_ - (term_a1 + term_a2))*x1_dash;
+      //std::cout << "term1 = " << term1 << std::endl;
+      double x1_dash2 = square(x1_dash);
+      //std::cout << "x1_dash2 = " << x1_dash2 << std::endl;
+      double term2_2 = square(term1) - 4.*(term_b + term_d*x1_dash2)*(term_c + term_e*x1_dash2);
+      //std::cout << "term2^2 = " << term2_2 << std::endl;
+      //assert(term2_2 >= 0.);
+      //if ( term2_2 > 0. ) std::cout << "term2^2 = " << term2_2 << std::endl;
+      if ( !(term2_2 >= 0.) ) return 0.;
+      double term2 = TMath::Sqrt(term2_2);
+      double term3 = 2.*(term_c + term_e*x1_dash2);      
+      double x3_dash_plus = (term1 + term2)/term3;
+      double x3_dash_minus = (term1 - term2)/term3;
+      //std::cout << "x3: '+' solution = " << x3_dash_plus << ", '-' solution = " << x3_dash_minus << std::endl;
+      x3_dash_solutions.push_back(x3_dash_plus);
+      x3_dash_solutions.push_back(x3_dash_minus);
+      //-------------------------------------------------------------------------
     }
   }
-  double x4 = x4_dash/visPtShift4;
-  if ( !(x4 >= 1.e-5 && x4 <= 1.) ) return 0.;
 
+  double prob = 0.;
+  for ( std::vector<double>::const_iterator x3_dash = x3_dash_solutions.begin();
+	x3_dash != x3_dash_solutions.end(); ++x3_dash ) {
+    double x3 = (*x3_dash)/visPtShift3;
+    if ( !(x3 >= 1.e-5 && x3 <= 1.) ) continue;
+    
+    double x4_dash = 1.;
+    bool x4isConstrained = true;
+    if ( !leg4isPrompt_ ) {
+      int idx_x4 = legIntegrationParams_[3].idx_X_;
+      if ( idx_x4 != -1 ) {
+	x4_dash = x_[idx_x4];
+	x4isConstrained = false;
+      } else {
+	if ( diTau2MassConstraint_ > 0. ) {
+	  x4_dash = (ditau2_mVis2_measured_/diTau2MassConstraint2_)/(*x3_dash);
+	} else {
+	  double ditau1_mTauTau2_approx = ditau1_mVis2_measured_/(x1_dash*x2_dash);
+	  x4_dash = (ditau2_mVis2_measured_/ditau1_mTauTau2_approx)/(*x3_dash);
+	}
+      }
+    }
+    double x4 = x4_dash/visPtShift4;
+    if ( !(x4 >= 1.e-5 && x4 <= 1.) ) continue;
+
+    prob += ClassicSVfitIntegrand4tau::EvalPS(
+      x1,  x1_dash, visPtShift1, x1isConstrained,
+      x2,  x2_dash, visPtShift2, x2isConstrained,
+      x3, *x3_dash, visPtShift3, x3isConstrained,
+      x4,  x4_dash, visPtShift4, x4isConstrained,
+      term_b, term_c, term_d, term_e);
+  }
+
+  return prob;
+}
+
+double ClassicSVfitIntegrand4tau::EvalPS(double x1, double x1_dash, double visPtShift1, bool x1isConstrained,
+					 double x2, double x2_dash, double visPtShift2, bool x2isConstrained, 
+					 double x3, double x3_dash, double visPtShift3, bool x3isConstrained, 
+					 double x4, double x4_dash, double visPtShift4, bool x4isConstrained, 
+					 double term_b, double term_c, double term_d, double term_e) const
+{
   // compute neutrino and tau lepton momenta 
   if ( !leg1isPrompt_ ) {
     int idx_phiNu1 = legIntegrationParams_[0].idx_phi_;
@@ -337,6 +423,13 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
     }
   }
   jacobiFactor *= 1./(visPtShift3*visPtShift4); // product of derrivatives dx3/dx3' and dx4/dx4' for parametrization of x3, x4 by x3', x4'  
+  //-----------------------------------------------------------------------------
+  // CV: only used in conjunction with VAMP integration
+  if ( x3isConstrained ) {
+    double x3_dash2 = square(x3_dash);
+    jacobiFactor *= 1./TMath::Abs(term_c/x1_dash + term_e*x1_dash - term_b/(x1_dash*x3_dash2) - term_d*x1_dash/x3_dash2);
+  }
+  //-----------------------------------------------------------------------------
   if ( x4isConstrained ) {
     if ( diTau2MassConstraint_ > 0. ) {
       jacobiFactor *= (x4/square(diTau2MassConstraint_));

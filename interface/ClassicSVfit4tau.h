@@ -8,7 +8,8 @@
 class ClassicSVfit4tau : public ClassicSVfitBase
 {
  public:
-  ClassicSVfit4tau(int = 0);
+  enum { kAlgoMarkovChain, kAlgoVAMP };
+  ClassicSVfit4tau(int = kAlgoMarkovChain, int = 0);
   ~ClassicSVfit4tau();
 
   void setDiTau1MassConstraint(double diTauMass);
@@ -27,7 +28,21 @@ class ClassicSVfit4tau : public ClassicSVfitBase
   /// run integration with Markov Chain
   void integrate(const std::vector<classic_svFit::MeasuredTauLepton>&, double, double, const TMatrixD&);
 
+  /// access reconstructed mass value and uncertainty
+  double getMass() const;
+  double getMassErr() const;
+
+  /// access likelihood for reconstructed mass value
+  double getLmax() const;
+
  protected:
+  /// set integration algorithm
+  /// (either VAMP or Markov Chain integration)
+  int intAlgoFlag_; 
+
+  void integrateMC();
+  void integrateVAMP();
+
   /// initialize Markov Chain integrator class
   void initializeMCIntegrator();
 
@@ -38,9 +53,16 @@ class ClassicSVfit4tau : public ClassicSVfitBase
 
   double diTau1MassConstraint_;
   double diTau2MassConstraint_;
-
+  
   /// histograms for evaluation of pT, eta, phi, mass and transverse mass of di-Higgs system (built from 4 taus)
   mutable classic_svFit::HistogramAdapterDiHiggs* histogramAdapter_;
+
+  /// reconstructed mass value and uncertainty
+  double dihiggsMass_;
+  double dihiggsMassErr_;
+
+  /// likelihood for reconstructed mass value
+  double Lmax_;
 };
 
 #endif

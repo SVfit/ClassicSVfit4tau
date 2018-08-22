@@ -20,6 +20,11 @@ namespace classic_svFit
     void setDiTau1MassConstraint(double diTauMass);
     void setDiTau2MassConstraint(double diTauMass);
 
+    //---------------------------------------------------------------------------
+    // CV: only used in conjunction with VAMP integration
+    void setDiHiggsMassConstraint(double diHiggsMass);
+    //---------------------------------------------------------------------------
+
     /// set pointer to histograms used to keep track of pT, eta, phi, mass and transverse mass of di-Higgs system
     /// during Markov Chain integration
     void setHistogramAdapter(HistogramAdapterDiHiggs* histogramAdapter);
@@ -29,6 +34,11 @@ namespace classic_svFit
 
     /// evaluate Phase Space part of the integrand for given value of integration variables x
     double EvalPS(const double* x) const;
+    double EvalPS(double x1, double x1_dash, double visPtShift1, bool x1isConstrained, 
+		  double x2, double x2_dash, double visPtShift2, bool x2isConstrained, 
+		  double x3, double x3_dash, double visPtShift3, bool x3isConstrained, 
+		  double x4, double x4_dash, double visPtShift4, bool x4isConstrained, 
+		  double term_b, double term_c, double term_d, double term_e) const;
 
     /// evaluate the iComponent of the full integrand for given value of integration variables q.
     /// q is given in standarised range [0,1] for each dimension.
@@ -70,6 +80,19 @@ namespace classic_svFit
     double diTau1MassConstraint2_;
     double diTau2MassConstraint_;
     double diTau2MassConstraint2_;
+
+    //---------------------------------------------------------------------------
+    // CV: only used in conjunction with VAMP integration
+    double diHiggsMassConstraint_;
+    double diHiggsMassConstraint2_;
+    
+    mutable double mVis12_;
+    mutable double mVis13_;
+    mutable double mVis14_;
+    mutable double mVis23_;
+    mutable double mVis24_;
+    mutable double mVis34_;
+    //---------------------------------------------------------------------------
 
     HistogramAdapterDiHiggs* histogramAdapter_;
   };

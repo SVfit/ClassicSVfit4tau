@@ -2,7 +2,7 @@
 #define TauAnalysis_ClassicSVfit4tau_svFitHistogramAdapter4tau_h
 
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
-#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h" // HistogramAdapterDiTau
+#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h" // HistogramTools, HistogramAdapterDiTau
 
 #include <Math/Functor.h>
 #include <TH1.h>

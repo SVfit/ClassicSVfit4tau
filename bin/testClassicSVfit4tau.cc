@@ -45,7 +45,8 @@ int main(int argc, char* argv[])
   */
 
   int verbosity = 1;
-  ClassicSVfit4tau svFitAlgo(verbosity);
+  //ClassicSVfit4tau svFitAlgo(ClassicSVfit4tau::kAlgoMarkovChain, verbosity);
+  ClassicSVfit4tau svFitAlgo(ClassicSVfit4tau::kAlgoVAMP, verbosity);
 #ifdef USE_SVFITTF
   //HadTauTFCrystalBall2* hadTauTF = new HadTauTFCrystalBall2();
   //svFitAlgo.setHadTauTF(hadTauTF);
@@ -68,6 +69,7 @@ int main(int argc, char* argv[])
   svFitAlgo.setDiTau1MassConstraint(massContraint);
   svFitAlgo.setDiTau2MassConstraint(massContraint);  
   svFitAlgo.integrate(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
+assert(0); // !!! ONLY FOR TESTING !!!
   bool isValidSolution_1stRun = svFitAlgo.isValidSolution();
   double dihiggs_mass_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMass();
   double dihiggs_massErr_1stRun = static_cast<HistogramAdapterDiHiggs*>(svFitAlgo.getHistogramAdapter())->getMassErr();

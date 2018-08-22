@@ -3,6 +3,7 @@
 <use   name="boost"/>
 <use   name="root"/>
 <use   name="roofit"/>
+<use   name="vamp"/>
 <Flags CPPDEFINES="USE_SVFITTF"/>
 <Flags LDFLAGS="-rdynamic" />
 <Flags ADD_SUBDIR="1"/>
