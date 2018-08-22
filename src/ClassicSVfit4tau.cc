@@ -222,7 +222,10 @@ void ClassicSVfit4tau::integrateVAMP()
   ClassicSVfitIntegrand4tau* integrand4tau = dynamic_cast<ClassicSVfitIntegrand4tau*>(integrand_);
   assert(integrand4tau);
   
-  double minMass = diTau1MassConstraint_ + diTau2MassConstraint_;
+  assert(measuredTauLeptons_.size() == 4);
+  double diHiggsVisMass = (measuredTauLeptons_[0].p4() + measuredTauLeptons_[1].p4() + measuredTauLeptons_[2].p4() + measuredTauLeptons_[3].p4()).mass();
+  std::cout << "diHiggsVisMass = " << diHiggsVisMass << std::endl;
+  double minMass = TMath::Max(diTau1MassConstraint_ + diTau2MassConstraint_, diHiggsVisMass);
   double maxMass = TMath::Max(1.e+4, 1.e+1*minMass);
   TH1* histogramMass = HistogramTools::makeHistogram_logBinWidth("ClassicSVfit4tau_integrateVAMP_histogramMass", minMass, maxMass, 1.025);
 
