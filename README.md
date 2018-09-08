@@ -30,7 +30,7 @@ cd $CMSSW_BASE/VAMP/vamp-2.3.0
 make -j4
 make install
 cp $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib/* $CMSSW_BASE/lib/$SCRAM_ARCH
-cp /home/veelken/public/vamp.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml
+cp $CMSSW_BASE/src/TauAnalysis/ClassicSVfit4tau/vamp.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml
 scram setup vamp
 scram tool info vamp
 ```
