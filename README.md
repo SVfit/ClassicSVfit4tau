@@ -4,9 +4,9 @@ Customized version of SVfit for hh->4tau analysis
 # Installation instructions
 The SVfitPerformanceStudies package has been tested with CMSSW 9_4_4.
 It depends on the following other packages:
-	TauAnalysis/ClassicSVfit
-	TauAnalysis/SVfitTF
-	VAMP (library for numeric integration, Comput.Phys.Commun. 120 (1999) 13)
+- TauAnalysis/ClassicSVfit
+- TauAnalysis/SVfitTF
+- VAMP (library for numeric integration, published in Comput.Phys.Commun. 120 (1999) 13)
 
 In order to install the code, execute:
 
