@@ -17,8 +17,6 @@ echo "installing SVfit..."
 git clone https://github.com/SVfit/ClassicSVfit4tau TauAnalysis/ClassicSVfit4tau
 git clone https://github.com/SVfit/ClassicSVfit TauAnalysis/ClassicSVfit
 git clone https://github.com/SVfit/SVfitTF TauAnalysis/SVfitTF
-cd $CMSSW_BASE/src
-scram b -j 4
 
 echo "installing VAMP library..."
 mkdir $CMSSW_BASE/VAMP
@@ -33,6 +31,10 @@ cp $CMSSW_BASE/VAMP/vamp-2.3.0/prefix/lib/* $CMSSW_BASE/lib/$SCRAM_ARCH
 cp $CMSSW_BASE/src/TauAnalysis/ClassicSVfit4tau/vamp.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected/vamp.xml
 scram setup vamp
 scram tool info vamp
+
+echo "compiling SVfit..."
+cd $CMSSW_BASE/src
+scram b -j 4
 ```
 
 In case of compilation problems, please sutmitt an issue on
