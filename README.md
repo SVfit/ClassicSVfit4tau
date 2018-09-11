@@ -55,7 +55,7 @@ Then execute:
 mkdir VAMP
 cd $_
 wget http://whizard.hepforge.org/oldsrc/vamp-2.3.0.tar.gz
-tar zxvf $CMSSW_BASE/VAMP/vamp-2.3.0.tar.gz
+tar zxvf vamp-2.3.0.tar.gz
 rm vamp-2.3.0.tar.gz
 cd vamp-2.3.0
 ./configure --prefix=$PWD/../install
