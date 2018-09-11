@@ -161,14 +161,20 @@ double ClassicSVfitIntegrand4tau::EvalPS(const double* q) const
     return 0.; 
   }
 
+  double visPtShift1 = 1.;
+  double visPtShift2 = 1.;
+  double visPtShift3 = 1.;
+  double visPtShift4 = 1.;
+#ifdef USE_SVFITTF
   int idx_visPtShift1 = legIntegrationParams_[0].idx_VisPtShift_;
-  double visPtShift1 = ( useHadTauTF_ && idx_visPtShift1 != -1 && !leg1isLeptonicTauDecay_ ) ? (1./x_[idx_visPtShift1]) : 1.;
+  if( useHadTauTF_ && idx_visPtShift1 != -1 && !leg1isLeptonicTauDecay_ ) visPtShift1 = (1./x_[idx_visPtShift1]);
   int idx_visPtShift2 = legIntegrationParams_[1].idx_VisPtShift_;
-  double visPtShift2 = ( useHadTauTF_ && idx_visPtShift2 != -1 && !leg2isLeptonicTauDecay_ ) ? (1./x_[idx_visPtShift2]) : 1.;
+  if( useHadTauTF_ && idx_visPtShift2 != -1 && !leg2isLeptonicTauDecay_ ) visPtShift2 = (1./x_[idx_visPtShift2]);
   int idx_visPtShift3 = legIntegrationParams_[2].idx_VisPtShift_;
-  double visPtShift3 = ( useHadTauTF_ && idx_visPtShift3 != -1 && !leg3isLeptonicTauDecay_ ) ? (1./x_[idx_visPtShift3]) : 1.;
+  if( useHadTauTF_ && idx_visPtShift3 != -1 && !leg3isLeptonicTauDecay_ ) visPtShift3 = (1./x_[idx_visPtShift3]);
   int idx_visPtShift4 = legIntegrationParams_[3].idx_VisPtShift_;
-  double visPtShift4 = ( useHadTauTF_ && idx_visPtShift4 != -1 && !leg4isLeptonicTauDecay_ ) ? (1./x_[idx_visPtShift4]) : 1.;
+  if( useHadTauTF_ && idx_visPtShift4 != -1 && !leg4isLeptonicTauDecay_ ) visPtShift4 = (1./x_[idx_visPtShift4]);
+#endif 
   if ( visPtShift1 < 1.e-2 || visPtShift2 < 1.e-2 || visPtShift3 < 1.e-2 || visPtShift4 < 1.e-2 ) return 0.;
 
   // scale momenta of visible tau decays products

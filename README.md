@@ -41,5 +41,48 @@ scram b -j 4
 In case of compilation problems, please sutmitt an issue on
 https://github.com/SVfit/ClassicSVfit4tau/issues
 
+# Without CMSSW software
+
+It is possible to build the software without CMSSW framework if the following prerequisites are satisfied (oldest software version the instructions were tested with):
+- ROOT (6.10/3 or newer)
+- GCC (6.3 or newer)
+- ClassicSVfit (instructions available [here](https://github.com/SVfit/ClassicSVfit#without-cmssw-software))
+- VAMP 2.3.0
+
+In order to build VAMP, make sure that you're in the same directory where you installed `ClassicSVfit`.
+Then execute:
+```bash
+mkdir VAMP
+cd $_
+wget http://whizard.hepforge.org/oldsrc/vamp-2.3.0.tar.gz
+tar zxvf vamp-2.3.0.tar.gz
+rm vamp-2.3.0.tar.gz
+cd vamp-2.3.0
+./configure --prefix=$PWD/../install
+make -j4
+make install
+cd ../..
+```
+
+In order to build the software, please execute the following lines in any directory with write access:
+```bash
+git clone https://github.com/SVfit/ClassicSVfit4tau TauAnalysis/ClassicSVfit4tau
+export LIBRARY_PATH=$LIBRARY_PATH:$PWD/TauAnalysis/ClassicSVfit/lib:$PWD/VAMP/install/lib:$PWD/TauAnalysis/ClassicSVfit4tau/lib
+make -f TauAnalysis/ClassicSVfit4tau/Makefile -j4
+```
+
+The test executables will be placed to `$PWD/TauAnalysis/ClassicSVfit4tau/exec`. In order to use them:
+```bash
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/TauAnalysis/ClassicSVfit/lib:$PWD/VAMP/install/lib:$PWD/TauAnalysis/ClassicSVfit4tau/lib
+
+# either enter the full path to the executable, e.g.
+./TauAnalysis/ClassicSVfit4tau/exec/testClassicSVfit4tau
+
+# or make the executable available globally
+export PATH=$PATH:$PWD/TauAnalysis/ClassicSVfit4tau/exec
+testClassicSVfit4tau # run anywhere
+```
+You can add the export statements to your `$HOME/.bashrc` to make their effect permanent.
+
 # Running instructions
 - [Example(s)](https://github.com/SVfit/ClassicSVfit4tau/blob/master/bin/testClassicSVfit4tau.cc)
