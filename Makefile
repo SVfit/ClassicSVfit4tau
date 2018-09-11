@@ -13,9 +13,11 @@ LDFLAGS  = -flto
 
 ifdef DEBUG
   CXXFLAGS += -Og -ggdb3
+  FCFLAGS  += -Og
 else
   CXXFLAGS += -O3 -ggdb0
   LDFLAGS  += -s
+  FCFLAGS  += -O3
 endif
 
 BASEDIR = TauAnalysis/ClassicSVfit4tau
