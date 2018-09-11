@@ -53,6 +53,7 @@ In order to build VAMP, make sure that you're in the same directory where you in
 Then execute:
 ```bash
 mkdir VAMP
+cd $_
 wget http://whizard.hepforge.org/oldsrc/vamp-2.3.0.tar.gz
 tar zxvf $CMSSW_BASE/VAMP/vamp-2.3.0.tar.gz
 rm vamp-2.3.0.tar.gz
@@ -66,7 +67,7 @@ cd ../..
 In order to build the software, please execute the following lines in any directory with write access:
 ```bash
 git clone https://github.com/SVfit/ClassicSVfit4tau TauAnalysis/ClassicSVfit4tau
-export LIBRARY_PATH=$LIBRARY_PATH:$PWD/TauAnalysis/ClassicSVfit/lib:$PWD/VAMP/install/lib
+export LIBRARY_PATH=$LIBRARY_PATH:$PWD/TauAnalysis/ClassicSVfit/lib:$PWD/VAMP/install/lib:$PWD/TauAnalysis/ClassicSVfit4tau/lib
 make -f TauAnalysis/ClassicSVfit4tau/Makefile -j4
 ```
 
