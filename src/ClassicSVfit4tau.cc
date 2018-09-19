@@ -194,7 +194,7 @@ void ClassicSVfit4tau::integrateMC()
   if ( isValidSolution_ ) {
     dihiggsMass_ = histogramAdapter_->getMass();
     dihiggsMassErr_ = histogramAdapter_->getMassErr();
-    Lmax_ = histogramAdapter_->getMassLmax();
+    Lmax_ = getProbMax();
   } else {
     dihiggsMass_ = -1.;
     dihiggsMassErr_ = -1.;
@@ -206,7 +206,7 @@ void ClassicSVfit4tau::integrateMC()
       std::cout << "found valid solution: mass = " << dihiggsMass_ << " +/- " << dihiggsMassErr_ << std::endl;
       std::cout << "(ditau1: mass = " << histogramAdapter_->ditau1()->getMass() << " +/- " << histogramAdapter_->ditau1()->getMassErr() << ","
 		<< " ditau2: mass = " << histogramAdapter_->ditau2()->getMass() << " +/- " << histogramAdapter_->ditau2()->getMassErr() << ","
-		<< " probMax = " << getProbMax() << ")" << std::endl;
+		<< " Lmax = " << Lmax_ << ")" << std::endl;
     } else {
       std::cout << "sorry, failed to find valid solution !!" << std::endl;
     }
