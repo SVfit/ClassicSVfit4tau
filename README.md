@@ -86,3 +86,12 @@ You can add the export statements to your `$HOME/.bashrc` to make their effect p
 
 # Running instructions
 - [Example(s)](https://github.com/SVfit/ClassicSVfit4tau/blob/master/bin/testClassicSVfit4tau.cc)
+
+# Reference
+
+If you use this code, please cite:                                                                                                    
+```
+   K. Ehataeht, L. Marzola, C. Veelken,
+   "Reconstruction of the mass of Higgs boson pairs in events with Higgs boson pairs decaying into four tau leptons",
+   arXiv:1809.06140
+```

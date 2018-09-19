@@ -151,5 +151,14 @@ int main(int argc, char* argv[])
     if (std::abs((dihiggs_massErr_3rdRun - 10.1509) / 10.1509) > 0.001) return 1;
   }
 
+  std::cout << std::endl;
+  std::cout << "************************************************************************************************************************" << std::endl;
+  std::cout << "* If you use this code, please cite:                                                                                   *" << std::endl;
+  std::cout << "*   K. Ehataeht, L. Marzola, C. Veelken,                                                                               *" << std::endl;
+  std::cout << "*   \"Reconstruction of the mass of Higgs boson pairs in events with Higgs boson pairs decaying into four tau leptons\", *" << std::endl;
+  std::cout << "*   arXiv:1809.06140                                                                                                   *" << std::endl;
+  std::cout << "************************************************************************************************************************" << std::endl;
+  std::cout << std::endl;
+
   return 0;
 }
